@@ -5,17 +5,6 @@ The basic idea is as follows:  If we have a list of all courses and their depend
 must have zero dependencies, call it k.  If we start with the course (or courses) that has/have zero dependencies, we can iterate
 through all other courses, removing k as one of their dependencies.  For example:
 
-0,1
-0,2
-0,3
-0,4
-1,2
-1,3,
-1,4
-2,3
-2,4
-3,4
-
 0 depends on 1, 2, 3, 4
 1 depends on 2, 3, 4
 2 depends on 3, 4
