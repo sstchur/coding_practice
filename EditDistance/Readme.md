@@ -171,6 +171,8 @@ let key = `${i}:${j}`;
 
 If that makes you feel yucky, you could opt to create a 2-dimensional array (or in Javascript an array of arrays).  That works too.  It is, I think slighly faster, but I'm going to go with the hash because it is easy to understand.  Here's the revised helper function (with comments removed and memoization added), along with the main function that calls it.
 
+## Revised code with memoization
+
 ```javascript
 function minDistance(word1, word2)
 {
