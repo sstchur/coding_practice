@@ -88,7 +88,7 @@ To determine if we've actually completed transforming word1 into word2, we can c
 
 ## Another "ah ha" moment
 
-If your face is scrunched up at this point, wondering how word1 could be one length, and word2 be a differnt length, and still claim that we've successfully transformed word1 into word2 (if their respective character pointers have reached the ends of each word), don't feel bed.  It's a little weird to think about, but remember, it isn't necessary to actually transform the words to solve this problem.  We need only determine the minimum number of edits to make it happen.
+If your face is scrunched up at this point, wondering how word1 could be one length, and word2 be a differnt length, and still claim that we've successfully transformed word1 into word2 (if their respective character pointers have reached the ends of each word), don't feel bad.  It's a little weird to think about, but remember, it isn't necessary to actually transform the words to solve this problem.  We need only determine the minimum number of edits to make it happen.
 
 Let's return to a simple example:
 
@@ -101,13 +101,13 @@ Pointer i starts at r in word1, while pointer j is at r in word2.  We'll see tha
 
 At this point, i will move to 4 and j will move to 4.  But there is nothing at word2[j]! And that's ok! It simply means that something must be deleted from word1. 
 
-Deletion from word1 can be as simply as advancing the i pointer.  Hopefully you can see why.  I reiterate that we do not actually have to transform word1 into word2. It's enough to know that a delete was needed.  In this case, a delete will advance the i pointer, and i will be equal to word1.length.  The j pointer had previously been equal to word2.length, so both pointers now equal the length of their respective strings.
+Deletion from word1 can be as simple as advancing the i pointer.  Hopefully you can see why.  I reiterate that we do not actually have to transform word1 into word2. It's enough to know that a delete was needed.  In this case, a delete will advance the i pointer, and i will be equal to word1.length.  The j pointer had previously been equal to word2.length, so both pointers now equal the length of their respective strings.
 
 And that means we're done! One edit (a delete) was all it took.
 
 ## Write some damn code already
 
-Ok ok, I know I've babbled on a lot with this one. Let's start building out the function.  We have a few cases that are pretty each to code. Our function will be recursive, and it will return a number which is the minimum number of edits required:
+Ok ok, I know I've babbled on a lot with this one. Let's start building out the function.  We have a few cases that are pretty easy to code. Our function will be recursive, and it will return a number which is the minimum number of edits required:
 
 ``` javascript
 function minDistCount(word1, word2, i, j)
