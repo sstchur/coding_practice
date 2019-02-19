@@ -153,6 +153,8 @@ var subsets = function(things)
 };
 ```
 
-Full code available in solution1.js
+Full code available in [solution1.js](solution1.js)
+
+Alternative version available in [solution2.js](solution2.js)
 
 

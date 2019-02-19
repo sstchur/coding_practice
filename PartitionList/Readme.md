@@ -97,4 +97,4 @@ Next, I list1.next (list1 at this point represents list1's tail) to the head of 
 
 Finally, I need to return list1's head, which is the node immediately following its "dummy" head.
 
-And there you have it.  Full code is already in this file, but it's in solution1.js as well.
+And there you have it.  Full code is already in this file, but it's in [solution1.js](solution1.js) as well.

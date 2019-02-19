@@ -219,7 +219,7 @@ function minDistCount(word1, word2, i, j, memo)
 
 According the leetcode, it's a touch faster when using an array of arrays to memo, rather than a hash.  I suspect that the bottom up dynamic programming approach is probably faster still, but I prefer this approach in terms of explanation.  Perhaps I will revisit this bottom-up at some point, but for now, I'm happy with this solution, as I feel I understand it well.
 
-Full solution available in solution1.js
+Full solution available in [solution1.js](solution1.js)
 
 
 

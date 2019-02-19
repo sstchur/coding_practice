@@ -178,6 +178,6 @@ function traverse(g, n, whiteSet, graySet, blackSet)
 }
 ```
 
-Full solution is available in solution1.js
+Full solution is available in [solution1.js](solution1.js)
 
-The file solution2.js has an alternate way of solving this problem, which is to track the dependents, rather than the dependencies.
+The file [solution2.js](solution2.js) has an alternate way of solving this problem, which is to track the dependents, rather than the dependencies.
