@@ -31,9 +31,9 @@ If you prefer the recursive solution, see [solution1.js](solultion1.js)
 
 If the recursive nature of my "slot" function makes you uncomfortable, check out [solution2.js](solution2.js)
 
-At first, I thought this problem sounded kinda easy, but the more I tried naive solutions on a white board, the more I realize that it was rather tricky.
+At first, I thought this problem sounded kinda easy, but the more I tried naive solutions on a white board, the more I realized that it was rather tricky.
 
-The key insight that eventually hit me was that I have an array of length n, and if it were fill with *all* the positive number from 1 to n, then each number would occupy its "rightful" spot in the array.  By that I mean, that the number 1 would be in the 1st position, number 2 in the second position, 3 in the 3rd and so forth.
+The key insight that eventually hit me was that I have an array of length n, and if it were filled with *all* the positive number from 1 to n, then each number would occupy its "rightful" spot in the array.  By that I mean, that the number 1 would be in the 1st position, number 2 in the second position, 3 in the 3rd and so forth.
 
 If any number between 1 and n were missing, then the corresponding spot in the array would *not* hold the correct number.  For instance, if n = 5, but the 3 is missing, the array might look like this:
 
@@ -128,6 +128,6 @@ function slot(nums, n)
 }
 ```
 
-Full code available in [solution1.js](solution1.js)
+Full code available in [solution1.js](./solution1.js)
 
-For a non-recursive solution see [solution2.js](solution2.js)
+For a non-recursive solution see [solution2.js](./solution2.js)
