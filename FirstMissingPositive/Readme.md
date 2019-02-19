@@ -128,6 +128,6 @@ function slot(nums, n)
 }
 ```
 
-Full code available in [solution1.js](./solution1.js)
+Full code available in [solution1.js](solution1.js)
 
-For a non-recursive solution see [solution2.js](./solution2.js)
+For a non-recursive solution see [solution2.js](solution2.js)
