@@ -130,7 +130,7 @@ preReqs.forEach(pr =>
 
 With out graph built, we just need to follow the logic I explained above that leverages the idea of WhiteSet, GraySet, and BlackSet.
 
-Typically, you'd use a Set class of some sort, and loop while the set isn't empty.  Javascript doesn't have sets, at least not the kind with the ability to query if they're empty or not, and ask for the next element (you could certainly build something, but that's not going to be my approach).
+Typically, you'd use a Set class of some sort, and loop while the set isn't empty.  Javascript actually does have sets (which is "newish" to me -- I don't think they existed in es5), but I didn't use them here.
 
 Instead, since I have a list of all nodes in the graph, I'll just loop over them, and only if the node is *not* in the WhiteSet, will I call traverse (only nodes in the WhiteSet need to be considered).  This should have the same effect as looping while the WhiteSet isn't empty.  
 
