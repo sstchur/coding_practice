@@ -48,11 +48,9 @@ Output: 3
 
 Leetcode classifies this as a Graph problem and called it an "easy" problem.  I'd have to agree, especially as far as graph problems go.
 
-There are two ways I coded this, one faster than the other.
+There are three ways I coded this, but second two are very similar to each other.  The first is, IMO, the easiest to understand, but not the fastest.
 
-The slower way, is easier to read (I think), but the concept of both solutions is pretty straight-forward to think about.
-
-The are two key points (given quite clearly in the problem statement) that you need to leverage to solve this.  The first is that the town judge trusts nobody.  This means that if you model this as a graph with outgoing edges representing trust, that the town judge has no outgoing edges.
+The are two key points (given quite clearly in the problem statement) that you need to leverage to solve this. The first is that the town judge trusts nobody.  This means that if you model this as a graph with outgoing edges representing trust, that the town judge has no outgoing edges.
 
 The second key point is that everyone else trusts the town judge. That means the town judge must have N-1 incoming edges. If there are N people and they all (except for the judge himself) trust the judge, then they'll all have outgoing "trust" edges to the judge, which means that the judge will have N-1 incoming edges.
 
