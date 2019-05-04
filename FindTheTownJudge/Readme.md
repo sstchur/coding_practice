@@ -48,9 +48,9 @@ Output: 3
 
 Leetcode classifies this as a Graph problem and called it an "easy" problem.  I'd have to agree, especially as far as graph problems go.
 
-There are three ways I coded this, but second two are very similar to each other.  The first is, IMO, the easiest to understand, but not the fastest.
+There are three ways I coded this, but the second two ways are very similar to each other.  The first is, IMO, the easiest to understand, but not the fastest.
 
-The are two key points (given quite clearly in the problem statement) that you need to leverage to solve this. The first is that the town judge trusts nobody.  This means that if you model this as a graph with outgoing edges representing trust, that the town judge has no outgoing edges.
+There are two key points (given quite clearly in the problem statement) that you need to leverage to solve this. The first is that the town judge trusts nobody.  This means that if you model this as a graph, with outgoing edges representing trust, that the town judge has no outgoing edges.
 
 The second key point is that everyone else trusts the town judge. That means the town judge must have N-1 incoming edges. If there are N people and they all (except for the judge himself) trust the judge, then they'll all have outgoing "trust" edges to the judge, which means that the judge will have N-1 incoming edges.
 
@@ -97,7 +97,7 @@ This first solution makes leetcode happy, so that's good.  But it's sub-optimal 
 
 Suppose we track only trustees and their in-degrees; that is, the number of incoming edges to a given trustee (one who is trusted).  We know this number must be N-1 for the person to have a shot at being the town judge (i.e. everyone trusts him).  We also know that he must trust no one if he is to be judge. We don't need to track out-degrees of *all* trustees; even *one* out-edge eliminates a person from being judge. 
 
-We can track in-degrees of trustees and also separately track possible judges. For any person with an out-going edge, we'll set that person's key to false in the possibleJudges hash.  Only if a trustee has accumulated N-1 in-coming edges *and* he isn't already set to fasle in the possibleJudges hash, will we set his value to true in the possibleJudges hash.
+We can track in-degrees of trustees and also separately track possible judges. For any person with an outgoing edge, we'll set that person's key to false in the possibleJudges hash.  Only if a trustee has accumulated N-1 incoming edges *and* he isn't already set to fasle in the possibleJudges hash, will we set his value to true in the possibleJudges hash.
 
 Here's what it looks like:
 
