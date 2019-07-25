@@ -11,150 +11,182 @@ Each node has another two boolean attributes : isLeaf and val. isLeaf is true if
 
 ## My thoughts
 
-This can be done without bit manipulation.  In fact, my first instinct would be to do it *without* bit manipulation.  But using bits is clever and interesting to think about.  For the non bit manipulation solution, see the file: solution2.js
+My first thought when I encountered this problem was "ah crap; this sounds confusing!" But after reading and re-reading the problem description a few times, I started to get it.  However, I resisted the temptation to rush into coding, as that surely would have let to failure.  This is the sort of problem that requires some careful consideration (I th
 
-Regarding solving this with bits...
-
-Observe what happens when you count in binary:
-
-```000
-001
-010
-011
-100
-101
-110
-111
-```
-
-Here we have 8 numbers in total, the numbers 0 through 7.  What do you notice about them?  What you should notice is that all the subsets have been considered (if you think of each 1 as “include this thing and 0 as “exclude this thing”).
-
-Suppose, you’re considering all the subsets of {A,B,C}.
-
-You can think of 000 as the empty set (that is, exclude A, exclude B, exclude C).
-
-The next number, 001, would mean: exclude A, exclude B, include C.
-
-For completeness, here are the rest
+### Example 1
+I'll start with a simple example.  Suppose we have a 2x2 grid:
 
 ```
-010 = exclude A, include B, exclude C
-011 = exclude A, include B, include C
-100 = include A, exclude B, exclude C
-101 = include A, exclude B, include C
-110 = include A, include B, exclude C
-111 = include A, include B, include C
+01
+10
 ```
 
-The great thing about this is that generating the series of numbers 0 through 7 (or 000 through 111), is as easy as counting!  It’s just a loop from 0 to 7!
+Essentially what we have to do is split the grid into 4 equal quadrants, such that each quadrant's cells have all the same value (either all 0s or all 1s).  If we split the grid above, we get:
+
+```
+0|1
+---
+1|0
+```
+
+In the UpperLeft we have a 0, the UpperRight is a 1, the BottomLeft is a 1, and the BottomRight is a zero.
+
+Now ask yourself, "self, for any given quadrant, is every cell in that quadrant the same (either all 0s or all 1s)?"
+
+In this case, the answer, of course, is yes! Granted, there is only ONE cell in each quadrant, but that doesn't make the answer any less true.
+
+What if our 2x2 grid contained all 0s or all 1s?  Should we still split it? Well, that depends.  According to the problem statement, no we shouldn't.  A quad tree node would only have child nodes if (and only if) all the cell's values in the grid aren't the same.  If all values are the same, there'd be no need to create additional tree nodes (and no need to further split the grid).
+
+However, it turns out that splittig the grid anyway is useful.
+
+## Recursion is what we want here
+
+It's probably not a shock to you that this problems smacks of recursion.  The question is: what's our base case?  At first, I was thinking that the base case is when a quadrant's cells contain all the same value (either all 0s or all 1s) and that I'd have to traverse through a quadrant to determine that. And if it turned out that all values were the same, then I wouldn't need to further split that quadrant (or create any new tree nodes).
+
+But if you allow your brain to think recursively, what you'll discover is that you can determine if a quadrant's cells contain all the same values by continuing to split the grid all the way down to a single cell.  Let's go back to the example 1.
+
+We first split the grid into 4 quadrants.
+
+```
+TopLeft =     [ 0 ]
+TopRight =    [ 1 ]
+BottomLeft =  [ 1 ]
+BottomRight = [ 0 ]
+```
+
+We now attempt to further split each of those quadrants into 4s.  We can't though, because there is only a single cell in each quadrant.  That's a good thing!  That's our base case.  When this happens, we know two things for sure:
+
+1. We have a leaf node
+2. The value of the leaf node will be whatever value is in that single cell
+
+So for the grid we're working with, we'll create 4 leaf nodes, hich will all be
+*nearly* identical.  Remember that the Node class given to us has:
+
+- val
+- isLeaf
+- topLeft
+- topRight
+- bottomLeft
+- bottomRight
+
+Each node we'll create will have null for the 4 properties of **topLeft**, **topRight**, **bottomLeft**, and **bottomRight**.  Each will also have *true* specified for **isLeaf**. The only question is: will they all have the same value for the **val** property?
+
+In this case, no. Some will have true (1) and some will have false (0).
+
+However, if they DID all have the same value, then every node would effectively be identical, which would mean that the splitting was unnecessary to begin with! That's ok though, we can simply pick any of the 4 nodes we created (they're all the same after all) and return it.
+
+Now, if even one of the nodes is different, then we need to somehow return all 4 nodes, which we'll do by creating a root node whose **isLeaf** property is set to *false* and whose **val** property is set to "*" (this is part of the problem statement).
+
+How can we determine if all 4 quadrants are the same?  Well, here it get a little difficult to describe because we're blurring the lines between a "cell" and a "quadrant."  But... the idea is that a node represents a quadrant, and if all the values in that quadrant are the same, then the node will not have any children and whatever value that node has, is the value that every cell in that quadrant has. 
+
+This is easies to think about when there is only one cell in the quadrant, but let's take a larger example and see how it breaks down:
+
+```
+00|11
+00|11
+-----
+11|00
+11|00
+```
+
+Here we have an 8x8 grid split into 4 quadrants.  It's each to see that in each quadrant, every cell's values are the same.  But our code doesn't know that.  It just blindly keeps splitting until it can split no further. So it'll start with the TopLeft quadrant and split that:
+
+```
+0|0
+---
+0|0
+```
+
+Once again, the code will attempt to split each quadrant, but this time, it won't be able to, but n = 1.  In that case, it will return a single Node whose **isLeaf** property is *true* and whose **val** property is false (for 0).
+
+This will happen for each of the 4 quadrants and once that's done, we'll need to examine each quadrant's node to see if they are all the same.  As long as they every cell in each quadrant has the same value **AND** every node is a leaf node, then all 4 nodes are the same!  Which means we can just return any one of them.
+
+That will take us back to the larger 8x8 grid, where this process will repeat.  The TopRight will split into 4 leaf nodes each of value 1, which again, are all the same, so we'll just pick any one and return it. 
+
+Then the BottomLeft will split and do the same, as will the BottomRight.
+
+At end of it all, we'll have 4 nodes, all leaf nodes, but this time, representing different values (false for TopLeft and BottomRight, and true for TopRight and BottomLeft).  Since all 4 quadrants (nodes) this time are NOT the same, we'll have to create a new root node that is NOT a leaf node and whose value is "*", and then affix each of the 4 quadrant nodes we created to it.
+
+
+## The code already!
+
+ I've rambled on for quite some time now and I'm still not convinced that I've done a good job of explaining this one.  So here's the code along with some inline comments.
 
 ```javascript
-for (let i = 0; i < 7; i++)
+/**
+ * // Definition for a QuadTree node.
+ * function Node(val,isLeaf,topLeft,topRight,bottomLeft,bottomRight) {
+ *    this.val = val;
+ *    this.isLeaf = isLeaf;
+ *    this.topLeft = topLeft;
+ *    this.topRight = topRight;
+ *    this.bottomLeft = bottomLeft;
+ *    this.bottomRight = bottomRight;
+ * };
+ */
+/**
+ * @param {number[][]} grid
+ * @return {Node}
+ */
+var construct = function(grid)
 {
-     // we’ve just generated all the subsets: 000 through 111 😊
-}
-```
-
-The only thing left to do is figure out how to check during each iteration, which bits are set and include the corresponding elements in the set we’re considering.
-
-There are a number of ways to determine if a bit is set. The basic idea is to AND the bit you want to check with the number 1.  Or, another way to think about it is to AND some power of 2 with the number that contains the bit you want to check.  If this sounds confusing or abstract, an example may help.
-
-Suppose you have the binary number 1001. There are 4 bits there. To ensure we're speaking the same language, I'm going to number them from 1 to 4 from *right to left*.
-
-```
-4321
-1001
-```
-
-The first bit is that one all the way to the right.  The second bit is the one to the left of the first bit, and so on.
-
-*Disclaimer:* I don't know if most people number/label the bits this way, and I don't especially care.  All that really matters is that we have some language of referring to each bit and that we're consistent in doing so.
-
-To check if the 1-bit is set, we can simply AND with 1
-
-```javascript
-1001 & 0001
-```
-
-If we get 1, the 1-bit is set.  How do we check if the 2-bit is set?  One option is to take the number 1 and left shift it 1 place, giving us 2 (or 0010) which we can then AND with our number:
-
-```javascript
-1001 & 0010
-```
-
-In this case, we'll discover that the 2-bit is *not* set.
-
-We can continue left-shifting 1 to check all of the bits.
-
-Another option, is to right shift the number itself and always AND with 1.  Since the 1-bit is aligned with 1 to start with, we'll actually right-shift by one *less* than the bit we want to check.
-
-For example, to check if the 3-bit is set, we'll right shift our number by 2 and then AND that with 1
-
-```javascript
-0010 & 0001
-```
-
-We will discover that the 3-bit is *not* set.
-
-We now have a general way of determining if a bit in a number is set.  Here's one way (not the only way) one might write this function:
-
-```javascript
-function isSet(n, bit)
-{
-    n = n >> bit-1;
-    return (n & 1) === 1;
-}
-```
-
-In this case, I chose to right-shift the number and AND that with 1 to see if the result is 1.  I could have chosen to left-shift the bit in order to align it with the bit in the number I wanted to check.  Either way works (and I'm sure a better coder than I could enlighten me on yet more ways to do this).
-
-## Generating subsets
-
-Ok, the real problem is here how to generate subsets.  A good first step is to determine *how many* subsets there will be.  If you didn't know, the answer is 2^n, where n is the number of elements in your complete set.  I would suggest that you simply memorize this.  Suppose you're considering all the subsets of { 6, 7, 8 }.
-
-There are 3 elements in that set, therefore, there will be 2^3 = 8 total subsets.  Conveniently, the numbers 0 through 7 (000 through 111) are perfect representations of each subset.  If this doesn't make sense to you, go back to the beginning of this article and re-read where the part where I enumerate all the binary representations of 1 through 7 and where I explain how 1 mean "include" and 0 means "exclude."
-
-Since generating the numbers 0 through 7 is trivial (it's just a loop after all), the only things left to do is write the inner-logic for that loop.  Specifically, for each number in the range 0 through 7, we'll generate 1 subset.  What goes into the subset will be determined by which number (0 through 7) is being considered.
-
-## Determining which elements belong in a set
-
-Let's write a function that takes a number, n, and based on that number, generates a set.  We'll consider the binary representation of n and for each bit in n which *is* set, we'll include an element, only if its index corresponds to a set bit in n.  An example will help illustrate.
-
-```
-  1, 2, 3
-{ A, B, C }
-```
-
-The element, A, is at index 1, B at 2, and C at 3 (yes, I know arrays are 0-indexed, but this is trivial for you to deal with).  For each number 0 through 7 (000 through 111), we will include A only if the 1-bit is set; we'll include B only if the 2-bit is set, and we'll include C only if the 3-bit is set.
-
-Here's what it looks like:
-
-```javascript
-function generateSet(n, things)
-{
-    return things.filter((k, i) => isSet(n, i+1));
-}
-```
-
-Suppose n = 101, and things = [ A, B, C ]. The return value will then be an array which includes A, excludes B, and includes C.  
-
-All that's left now, is to run our generateSet function once for every number in the range 0 through 7.
-
-```javascript
-var subsets = function(things)
-{
-    let r = [];
-    let total = 1 << things.length
-    while (total--)	// looping forward would have been fine too
-    {
-        r.push(generateSet(total, things));
-    }    
-    return r;
+    return quadHelper(grid, 0, 0, grid[0].length);
 };
+
+function quadHelper(grid, i, j, n)
+{
+    if (n === 1)
+    {
+        // double bang will convert 1 to true and 0 to false
+        // second param specifies isLeaf, which will always be true for single cell grids
+        // all other params are null as leaf nodes have no children
+        return new Node(!!(grid[i][j] === 1), true, null, null, null, null);
+    }
+    else
+    {
+        // split the grid in half (problem statement guarantees a power of 2)
+        const half = n/2;
+
+        // recursively construct nodes for each quadrant
+        const topLeft = quadHelper(grid, i, j, half);
+        const topRight = quadHelper(grid, i, j + half, half);
+        const bottomLeft = quadHelper(grid, i+half, j, half);
+        const bottomRight = quadHelper(grid, i+half, j+half, half);
+        
+        // determine if all 4 quadrants (nodes) are the same
+        if (allSame(topLeft, topRight, bottomLeft, bottomRight))
+        {
+            // if so, pick any one of them to return
+            return topLeft;
+        }
+        else
+        {
+            // if not all the same, create a new (non-leaft) root node
+            // whose value is * and affix each of the quadrant nodes to it 
+            const root = new Node('*', false, topLeft, topRight, bottomLeft, bottomRight);
+            return root;
+        }
+    }
+}
+    
+function allSame(TL, TR, BL, BR)
+{
+	// Quadrant nodes are "equal" if
+	// 1. They are all leaf nodes
+	// 2. Every value in each node is true or every value in each node is false
+	// NOTE: not strictly necessary to use === true and === false; could have avoided those, but since
+	// javascript doesn't have type safety and because sometiems val = "*", I chose to be explicit. This is
+	// just for clarity though.
+    if (TL.isLeaf && TR.isLeaf && BL.isLeaf && BR.isLeaf && 
+       ((TL.val === true && TR.val === true && BL.val === true && BR.val === true) ||
+        (TL.val === false && TR.val === false && BL.val === false && BR.val === false)))
+        {
+            return true;
+        }
+    return false;
+}
 ```
 
-Full code available in [solution1.js](solution1.js)
-
-Alternative version available in [solution2.js](solution2.js)
+And here's the full, stand-alone code available in [solution1.js](solution1.js)
 
 
