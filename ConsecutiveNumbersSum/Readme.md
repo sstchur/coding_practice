@@ -263,6 +263,9 @@ var consecutiveNumbersSum = function(N)
     return count+1;
 };
 ```
+### One final note
+
+If you're wondering why I return *count + 1;* instead of just *return count;* remember back to the explanation where I mentioned that there is one formula I didn't bother writing: 1A + 0 = N.  We already know that *N* is always going to account for at least 1 of the answers.  So we can start our logic with the 2A + 1 formula, and simply hard code the +1 when returning our final answer!
 
 This makes Leetcode happy and performs very well.
 
