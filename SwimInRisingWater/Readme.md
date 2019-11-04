@@ -97,27 +97,6 @@ function traverse(grid, r, c, visited, possibilities, answer)
 	// if this is the first time visiting this cell, mark it as visited
     visited.add(key);
     
-	// var swimInWater = function(grid)
-{
-    let answer = { val: grid[grid.length-1][grid.length-1] };
-    traverse(grid, grid.length-1, grid.length-1, new Set(), new Heap(), answer);
-    return answer.val;
-};
-
-function traverse(grid, r, c, visited, possibilities, answer)
-{
-    if (r === 0 && c === 0)
-    {
-        return;
-    }
-    
-    if (r < 0 || r > grid.length-1 || c < 0 || c > grid.length-1) return;
-    
-    const key = `${r}:${c}`;
-    if (visited.has(key)) return;
-    
-    visited.add(key);
-    
 	// problem statement says we can only move up, down, left or right - these
 	// are our possibilities
     const prevCol = c-1;
