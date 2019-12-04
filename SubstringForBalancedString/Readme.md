@@ -112,6 +112,6 @@ function balancedString(s)
 
 Full code available in [solution1.js](solution1.js)
 
-TLE version available in [solution2 (TLE).js](solution2 (TLE).js)
+TLE version available in [solution2_TLE.js](solution2_TLE.js)
 
 
