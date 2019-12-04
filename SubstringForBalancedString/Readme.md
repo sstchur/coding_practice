@@ -1,4 +1,4 @@
-# Subsets
+# Replace the Substring for Balanced String
 
 [https://leetcode.com/problems/replace-the-substring-for-balanced-string/](https://leetcode.com/problems/replace-the-substring-for-balanced-string/)
 
