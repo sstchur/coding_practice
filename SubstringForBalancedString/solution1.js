@@ -19,60 +19,67 @@
 
 function balancedString(s)
 {
-	const n = s.length/4;
+    const n = s.length / 4;
 
-	const count = { Q: 0, E: 0, R: 0, W: 0 };
-	let total = 0;
-
-	let i, j;
-
-	for (i = 0; i < s.length; i++)
+    const count =
     {
-		const c = s[i];
-		if (count[c] < n)
+        Q: 0,
+        E: 0,
+        R: 0,
+        W: 0
+    };
+    let total = 0;
+
+    let i, j;
+
+    for (i = 0; i < s.length; i++)
+    {
+        const c = s[i];
+        if (count[c] < n)
         {
-			count[c]++;
-			total++;
+            count[c]++;
+            total++;
         }
-		else break;
+        else break;
     }
 
-	for (j = s.length-1; j >= 0; j--)
+    for (j = s.length - 1; j >= 0; j--)
     {
-		const c = s[j];
-		if (count[c] < n)
+        const c = s[j];
+        if (count[c] < n)
         {
-			count[c]++;
-			total++;
+            count[c]++;
+            total++;
         }
-		else break;
+        else break;
     }
 
-	i--;
-	let best = s.length - total;
-	
-	while (i >= 0)
-    {
-		const leftChar = s[i];
-		count[leftChar]--;
-		total--;
+    i--;
+    let best = s.length - total;
 
-		if (count[s[j]] < n)
+    while (i >= 0)
+    {
+        const leftChar = s[i];
+        count[leftChar]--;
+        total--;
+
+        if (count[s[j]] < n)
         {
-			while (count[s[j]] < n)
+            while (count[s[j]] < n)
             {
-				count[s[j]]++;
-				total++;
+                count[s[j]]++;
+                total++;
 
-				const option = s.length - total;
-				if (option < best) best = option;
+                const option = s.length - total;
+                if (option < best) best = option;
 
-				j--;
+                j--;
             }
         }
 
-		i--;
+        i--;
     }
 
-	return best;
+    return best;
 }
+

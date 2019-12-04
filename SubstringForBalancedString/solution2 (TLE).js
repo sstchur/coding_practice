@@ -9,58 +9,67 @@
 
 function balancedString(s)
 {
-	const n = s.length/4;
-	const count = { Q: 0, E: 0, W: 0, R: 0, total: 0 };
-	const min = { val: Infinity };
+    const n = s.length / 4;
+    const count =
+    {
+        Q: 0,
+        E: 0,
+        W: 0,
+        R: 0,
+        total: 0
+    };
+    const min = {
+        val: Infinity
+    };
 
-	bsHelper(s, n, 0, s.length-1, count, min, {});
-	return min.val;
+    bsHelper(s, n, 0, s.length - 1, count, min, {});
+    return min.val;
 }
 
 function bsHelper(s, n, i, j, count, min, memo)
 {
-	const key = `${i}:${j}`;
-	if (memo[key] !== undefined)
+    const key = `${i}:${j}`;
+    if (memo[key] !== undefined)
     {
-		//console.log('from memo');
-		return;
+        //console.log('from memo');
+        return;
     }
 
-	if (i > j) return;
+    if (i > j) return;
 
-	const leftChar = s.charAt(i);
-	const rightChar = s.charAt(j);
+    const leftChar = s.charAt(i);
+    const rightChar = s.charAt(j);
 
-	if (count[leftChar] < n)
+    if (count[leftChar] < n)
     {
-		count[leftChar]++;
-		count.total++;
+        count[leftChar]++;
+        count.total++;
 
-		const best = s.length - count.total;
-		if (best < min.val) min.val = best;
-		
-		bsHelper(s, n, i+1, j, count, min, memo);
-		memo[key] = 1;
+        const best = s.length - count.total;
+        if (best < min.val) min.val = best;
 
-		count[leftChar]--;
-		count.total--;
+        bsHelper(s, n, i + 1, j, count, min, memo);
+        memo[key] = 1;
+
+        count[leftChar]--;
+        count.total--;
     }
 
-	if (count[rightChar] < n)
+    if (count[rightChar] < n)
     {
-		count[rightChar]++;
-		count.total++;
+        count[rightChar]++;
+        count.total++;
 
-		const best = s.length - count.total;
-		if (best < min.val) min.val = best;
+        const best = s.length - count.total;
+        if (best < min.val) min.val = best;
 
-		bsHelper(s, n, i, j-1, count, min, memo);
-		memo[key] = 1;
+        bsHelper(s, n, i, j - 1, count, min, memo);
+        memo[key] = 1;
 
-		count[rightChar]--;
-		count.total--;
+        count[rightChar]--;
+        count.total--;
     }
 
-	const best = s.length - count.total;
-	if (best < min.val) min.val = best;	
+    const best = s.length - count.total;
+    if (best < min.val) min.val = best;
 }
