@@ -47,7 +47,7 @@ function balancedString(s)
     const n = s.length / 4;
 
     const count =
-	{
+    {
         Q: 0,
         E: 0,
         R: 0,
