@@ -1,21 +1,56 @@
-var subsets = function(things)
-{
-    let r = [];
-    let total = 1 << things.length
-    while (total--)	// looping forward would have been fine too
-    {
-        r.push(generateSet(total, things));
-    }    
-    return r;
-};
+// Solution #1 - acceptable
+// Mark deleted indices, start from 0 each time
 
-function generateSet(n, things)
+function removeKdigits(num, k)
 {
-    return things.filter((k, i) => isSet(n, i+1));
+   num = [...num];
+   let start = 0;
+   for (let i = 0; i < k; i++)
+   {
+      const j = findIndexToDelete(num, start);
+      start = j - 1;
+      while (num[start] === -1)
+      {
+         start--;
+         if (start < 0)
+         {
+            start = 0;
+            break;
+         }
+      }
+      num[j] = -1;
+   }
+
+   const strBuffer = [];
+   for (let i = 0; i < num.length; i++)
+   {
+      if (num[i] !== -1)
+      {
+         if (num[i] === '0' && strBuffer.length === 0) continue;
+         strBuffer.push(num[i]);
+      }
+   }
+
+   return strBuffer.length > 0 ? strBuffer.join('') : '0';
 }
 
-function isSet(n, bit)
+function findIndexToDelete(arr, start)
 {
-    n = n >> bit-1;
-    return (n & 1) === 1;
+   let lastIndex = -1;
+   for (let i = start; i < arr.length; i++)
+   {
+      const current = arr[i];
+      const last = arr[lastIndex] || -Infinity;
+
+      if (current === -1) continue;
+
+      if (last > current)
+      {
+         return lastIndex;
+      }
+
+      lastIndex = i;
+   }
+
+   return lastIndex;
 }

@@ -1,20 +1,56 @@
-function subsets(things)
+// Solution #2 - good
+// Mark deleted indices, try not to backtrack
+
+function removeKdigits(num, k)
 {
-    let sets = [[]];
-    things.forEach(thing =>
-    {
-        let i = sets.length;
-        while (i--)
-        {
-            sets.push([thing].concat(sets[i]));
-        }
-    });
-    
-    return sets;
+   num = [...num];
+   let start = 0;
+   for (let i = 0; i < k; i++)
+   {
+      const j = findIndexToDelete(num, start);
+      start = j - 1;
+      while (num[start] === -1)
+      {
+         start--;
+         if (start < 0)
+         {
+            start = 0;
+            break;
+         }
+      }
+      num[j] = -1;
+   }
+
+   const strBuffer = [];
+   for (let i = 0; i < num.length; i++)
+   {
+      if (num[i] !== -1)
+      {
+         if (num[i] === '0' && strBuffer.length === 0) continue;
+         strBuffer.push(num[i]);
+      }
+   }
+
+   return strBuffer.length > 0 ? strBuffer.join('') : '0';
 }
 
-/*
-The key thing to remember here is that your sets variable, is a "running" list of sets.
-That is, for each item in the complete set, you want to combine that item with every set
-in your running sets list.
-*/
+function findIndexToDelete(arr, start)
+{
+   let lastIndex = -1;
+   for (let i = start; i < arr.length; i++)
+   {
+      const current = arr[i];
+      const last = arr[lastIndex] || -Infinity;
+
+      if (current === -1) continue;
+
+      if (last > current)
+      {
+         return lastIndex;
+      }
+
+      lastIndex = i;
+   }
+
+   return lastIndex;
+}
