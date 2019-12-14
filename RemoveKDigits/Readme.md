@@ -139,37 +139,37 @@ function removeKdigits(num, k)
 {
     // First, convert num from a string to an array.
     // Why? So we can set the value of specific incdices
-	// to -1 to signify deletion
-	num = [...num];
+    // to -1 to signify deletion
+    num = [...num];
     
-	// loop k times, since that's how many digits we need to delete
-	for (let i = 0; i < k; i++)
+    // loop k times, since that's how many digits we need to delete
+    for (let i = 0; i < k; i++)
     {
-		// find the next index to delete and update the value at
-		// that index to -1 (to signify deletion)
+        // find the next index to delete and update the value at
+        // that index to -1 (to signify deletion)
         const j = findIndexToDelete(num);
         num[j] = -1;
     }
 
-	// build a new output array to hold the final answer
+    // build a new output array to hold the final answer
     const strBuffer = [];
 
-	// loop through the num array, skipping deleted items (-1s)
+    // loop through the num array, skipping deleted items (-1s)
     for (let i = 0; i < num.length; i++)
     {
         if (num[i] !== -1)
         {
-			// gotcha: need to also omit leading 0s
-			// if our output array contains nothing,
-			// and the current value is 0, skip it to
-			// avoid leading 0s in the final output
+            // gotcha: need to also omit leading 0s
+            // if our output array contains nothing,
+            // and the current value is 0, skip it to
+            // avoid leading 0s in the final output
             if (num[i] === '0' && strBuffer.length === 0) continue;
             strBuffer.push(num[i]);
         }
     }
 
-	// if the strBuffer isn't empty, convert it to a string and return
-	// otherwise, just return 0
+    // if the strBuffer isn't empty, convert it to a string and return
+    // otherwise, just return 0
     return strBuffer.length > 0 ? strBuffer.join('') : '0';
 }
 ```
