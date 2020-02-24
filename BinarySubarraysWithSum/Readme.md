@@ -197,7 +197,7 @@ var numSubarraysWithSum = function(A, S)
 
 ## Solution 3 - An actual, fast solution!
 
-Alright, now bear with me. This solution is a little hard to explain, and I'm not completely satisfied with the code -- it doesn't read as nicely as I'd like, but it does run fairly fast (Leetcode says is beats 90% for runtime and 100% for memory, 64ms).
+Alright, now bear with me. This solution is a little hard to explain, and I'm not completely satisfied with the code -- it doesn't read as nicely as I'd like, but it does run fairly fast (Leetcode says is beats 96% for runtime and 100% for memory, 60ms).
 
 Let's use the following as an example:
 
@@ -251,11 +251,11 @@ Here's the code I came up with to do this. Since I used a bunch of one-character
 ```javascript
 var numSubarraysWithSum = function(A, S)
 {
-    let s = -1;		// s stands for "start" - between this point and i represents the number of 0s on the left
+    let h = -1;		// h is our starting point: between this point and i represents the number of 0s on the left
     let i = 0;		// i is the point at which a "tight" subarray begins
     let j = 0;		// j is the point at which a "tight" subarray ends
     let k = 0;		// k is point to the right of a "tight" subarray after which we don't see any more consecutive 0s
-    
+
     let sum = 0;
     let count = 0;
     
@@ -272,85 +272,51 @@ var numSubarraysWithSum = function(A, S)
         {
             while (A[i] === 0 && i < j) i++;
             
-            if (k <=j) k = j+1;
+            if (k <= j) k = j+1;
             while (A[k] === 0 && k < A.length) k++;
             
-            const leftZeros = i-s-1;
+            const leftZeros = i-h-1;
             const rightZeros = k-j-1;
             count += 1 + leftZeros + rightZeros + leftZeros*rightZeros;
         }
         
-        if (A[i] === 1) s = i; else s++;
+        h = i;
         sum -= A[i++];
         j++;
     }
     
-    return count;    
+    return count;  
 };
 ```
 
-### Explanation
+## Explanation
 
-After initializing a bunch of variables, we proceed to iterate through the input array, *A*, using *j* as our main looping variable. Remember that *j* is where a "tight" subarray ends. As we loop, we'll build up the *sum* variable, which tells us how many 1s we have from i to j. The *sum* can only increase by (at most) 1 at a time, so we simply loop as long as *sum < S* increasing j as necessary.
+### Variables h, i, j and k
+After initializing a bunch of variables, we proceed to iterate through the input array, *A*, using *j* as our main looping variable. Remember that *j* is where a "tight" subarray ends. As we loop, we'll build up the *sum* variable, which tells us how many 1s we have from i to j. The *sum* can only increase by (at most) 1 at a time, so we simply loop as long as *sum < S*, increasing j as necessary.
 
-The *if (sum === S)* may seem unnecessary, but we need it to handle a case where the input, *S* is 0. In that case, it's quite possible for sum to end up **larger** than *S*, which means we definitely don't want to run the formula and add to the the total *count*.
+The *if (sum === S)* statement may seem unnecessary, but we need it to handle a case where the input, *S* equals 0. In that case, it's quite possible for sum to end up **larger** than *S*, which means we definitely don't want to run the formula and add to the the total *count*.
 
+### Determining how many zeros on left and right
 Once we've found a sum that equals *S*, we need to know how many 0s on the left and right. Two while loops help me accomplish this, but to be honest, I'm not especially happy with this code. It feels a little convoluted to me, but I haven't (yet) thought of a way to clean it up.
 
 The first while loop increments *i* (the beginning of a "tight" subarray") as long as it points to a 0. This makes sense, because, by definition, "tight" subarrays cannot have extraneous 0s on their immediate left.
 
 The second while loop is similar. It starts just beyond *j* (the end of a "tight" subarray) and increments as long as *k* points to a 0. Again, a "tight" subarray cannot have extraneous 0s on its immediate right.
 
-Now we know determine the number of 0s on the left and right. That part is easy, it's simply *i - s - 1* and *k - j - 1*, and once we know *leftZeros* and *rightZeros*, we can run the formula.
+With variables *h, i, j, and k* set correctly, we can now determine the number of 0s on the left and right. That part is easy, it's simply *i - h - 1* and *k - j - 1*.  We assign these values to *leftZeros* and *rightZeros*, and use them to run the formula.
 
-The last piece is to advance *s* and then advance *i*.  Advancing *i* means we'll be removing one digit (a 0 or a 1) from the left side of our "tight" subarray. This is why we must execute the bit *sum -= A[i++]*.  
+### Advancing *h,* *i*, and *j*
 
-There is something tricky about advancing *s* which probably needs explanation: The *s* variable will sometimes m
-ove up by 1, and sometimes jump all the way up to where *i* is. Why?  Consider this case:
+The last piece is to advance *h*, *i*, and *j*.   Advancing *h* is easy - it just needs to jump up to where *i* is (and we make sure to do this before advnacing *i*. 
 
-```
-A = [ 0, 0, 0, 1, 1, 1, 0, 1 ]
-S = 2
-```
+Advancing *i* means we'll be removing one digit (a 0 or a 1) from the left side of our "tight" subarray, which means that our *sum* may change. This is why we must execute the bit *sum -= A[i++]*.
 
+Advancing *j* goes hand in hand with advancing *i*. Since we're subtracting out the value at *i* from our sum, we need to add in the value at the *next* j, which we accomplish by simply advancing *j*. Adding it to the sum will happen automatically on the next loop iteration.
 
+## Three solutions 
 
-1,1
-1,1 (yes again second two ones)
+Solution 1-A (slow) available in [solution1a.js](solution1a.js)
 
+Solution 1-B (slow, but faster than 1-A) available in [solution1b.js](solution1b.js)
 
-## The code
-
-If we understand the basics here, this code is dead simple to write. At least everything other than the slot function is, and even that isn't too hard.
-
-```javascript
-function firstMissingPositive(nums)
-{
-	// slot every number that can be slotted into its "rightful" position
-	for (let i = 0; i < nums.length; i++)
-	{
-		let n = nums[i];
-		slot(nums, n);
-	}
-
-	// make a second pass through the array, looking for the first spot that doesn't hold the correct number
-	for (let i = 0; i < nums.length; i++)
-	{
-		if (nums[i] !== i+1) return i+1;
-	}
-	return nums.length + 1;
-}
-
-function slot(nums, n)
-{
-	if (n < 1 || n > nums.length || nums[n-1] === n) return;
-
-	let tmp = nums[n-1];
-	nums[n-1] = n;
-	slot(nums, tmp);
-}
-```
-
-Full code available in [solution1.js](solution1.js)
-
-For a non-recursive solution see [solution2.js](solution2.js)
+Solution 2 (fast) available in [solution2.js](solution2.js)
