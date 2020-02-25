@@ -120,7 +120,7 @@ How does this help you find the answer? Suppose you're looking for *S = 2*. All 
 
 When using an array instead of a matrix that you continually update, simply increase a counter each time you encounter your target value.  
 
-## Solution 1 - Accepted, but very slow
+## Solution 1A - Accepted, but very slow
 
 ```javascript
 var numSubarraysWithSum = function(A, S)
@@ -156,7 +156,7 @@ Second, we run a nested loop which subtracts the first value in the *sums* array
 
 *Actually, you can save an operation by not updating sums[j], and instead of looping over the sums array, looping over the original input array.  This works because the values in the original input array are precisely the values that you need to subtract from your sum, each iteration!  I ran both solutions and both are Leetcode accepted (and both are too slow to bother with)*
 
-## Solution 2 - Micro-optimizing the sums idea. Faster, but still too slow
+## Solution 1B - Micro-optimizing the sums idea. Faster, but still too slow
 
 By observing that as you're subtracting from values in the *sums* array, there may come a point where your sum is greater than *S*.  If that happens, there is no point in continuing with **that** iteration of the inner loop, we might as well break out and save some computation.  This helps (it cuts the runtime nearly in half vs solution 1), but it's still too slow :-(
 
@@ -197,7 +197,7 @@ var numSubarraysWithSum = function(A, S)
 };
 ```
 
-## Solution 3 - An actual, fast solution!
+## Solution 2 - An actual, fast solution!
 
 Alright, now bear with me. This solution is a little hard to explain, and I'm not completely satisfied with the code -- it doesn't read as nicely as I'd like, but it does run fairly fast (Leetcode says is beats 96% for runtime and 100% for memory, 60ms).
 
