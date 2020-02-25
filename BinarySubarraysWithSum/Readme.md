@@ -167,17 +167,17 @@ var numSubarraysWithSum = function(A, S)
 {
     let sums = [];
     let count = 0;
-    
+
     A.forEach((n,i) =>
     {
-        const sum = n + (sums[i-1] || 0);
+        const sum = n + (sums[i-1]||0);
         if (sum === S)
         {
             count++;
         }
         sums.push(sum);
     });
-    
+
     let i = 0;
     for (let m = 0; m < sums.length; m++)
     {
@@ -185,12 +185,14 @@ var numSubarraysWithSum = function(A, S)
         {
             const sum = sums[n] - sums[i];
             if (sum > S) break;
-            if (sum < S) continue;
-            count++;
+            if (sum === S)
+            {
+                count++;
+            }
         }
         i++;
     }
-    
+
     return count;
 };
 ```
