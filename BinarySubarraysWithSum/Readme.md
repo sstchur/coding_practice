@@ -90,7 +90,7 @@ I forgot all about this problem quite honestly, but I use Leetcode often (at lea
 
 Here's a thought. What if I were to store in memory, the sum of the subarray from 0:1, from 0:2, from 0:3 ... up to 0:n?  And then also, the subarray from 1:2, from 1:3 ... to 1:n?
 
-You might notice something right away, which is that once you've calculate the sum from say, 0:3, the sum from 1:3 is essentially already known. Why? Because the sum from 1:3 is simply the sum from 0:3 minus the value at index 0!  Let's use the following input array as an example: *[1,0,1,0,1]*
+You might notice something right away, which is that once you've calculated the sum from say, 0:3, the sum from 1:3 is essentially already known. Why? Because the sum from 1:3 is simply the sum from 0:3 minus the value at index 0!  Let's use the following input array as an example: *[1,0,1,0,1]*
 
 And let's build a matrix of what the sums would look like:
 
@@ -220,7 +220,7 @@ Well, a "tight" subarray is just a term I made up!  So I wouldn't expect you to 
 
 In the example above, the subarray from index 3 to index 5 is what I'm calling a "tight" subarray that sums to 3. Note that a "tight" subarray need not be devoid of all 0s; it just cannot have extraneous 0s on either the left or the right.
 
-If you find a "tight" subarray that sums to your target value, *S*, then you can count the number of **consecutive* 0s to its **immediate** left, and the number of **consecutive** 0s to its **immediate** right, and then use the following formula:
+If you find a "tight" subarray that sums to your target value, *S*, then you can count the number of **consecutive** 0s to its **immediate** left, and the number of **consecutive** 0s to its **immediate** right, and then use the following formula:
 
 count = 1 + leftZeros + rightZeros + (leftZeros*rightZeros)
 
@@ -296,7 +296,7 @@ var numSubarraysWithSum = function(A, S)
 ### Variables h, i, j and k
 After initializing a bunch of variables, we proceed to iterate through the input array, *A*, using *j* as our main looping variable. Remember that *j* is where a "tight" subarray ends. As we loop, we'll build up the *sum* variable, which tells us how many 1s we have from i to j. The *sum* can only increase by (at most) 1 at a time, so we simply loop as long as *sum < S*, increasing j as necessary.
 
-The *if (sum === S)* statement may seem unnecessary, but we need it to handle a case where the input, *S* equals 0. In that case, it's quite possible for sum to end up **larger** than *S*, which means we definitely don't want to run the formula and add to the the total *count*.
+The *if (sum === S)* statement may seem unnecessary, but we need it to handle a case where the input, *S* equals 0. In that case, it's quite possible for sum to end up **larger** than *S*, which means we definitely don't want to run the formula and add to the total *count*.
 
 ### Determining how many zeros on left and right
 Once we've found a sum that equals *S*, we need to know how many 0s on the left and right. Two while loops help me accomplish this, but to be honest, I'm not especially happy with this code. It feels a little convoluted to me, but I haven't (yet) thought of a way to clean it up.
