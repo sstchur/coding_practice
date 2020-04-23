@@ -25,35 +25,142 @@ This is a hard problem.  At least, I thought it was hard.  I had no clue how to 
 
 I didn't write a single line of code for this problem for a few days.  I spent time playing with the math on my white board for 10 min here, 20 min there, over the course of several days before I began to develop a framework for a general solution.
 
-Let's start with what didn't work.
+I tried a variety of ideas, including:
 
-## First idea - split the array in half
+1. Start with two empty lists. Add one item to one list and see if the means are the same. If not, try to figure out the "best" number to add to the other list to keep the means the same (or as close as possible). This got me nowhere
 
-At first I thought "maybe I just arbitrarily split the array in half (call one list A and the other B), calculate the mean of each, see what their difference is, and then try to strategically move an item from one list to the other to close the mean gap."
+2. Start by splitting the original array in half and compare the means.  Try to determine which number should be moved from one list to the other in order to "close the gap" in means between the two lists.  This also got me nowhere.
 
-This sounds useful at first, but it mostly leads nowhere.  First of all, it's a bad assumption that you'll only have to move one item from list A to B or vice versa.  For simplicity, that's what I tried.  If I couldn't find a single item that would make the mean difference between the two lists zero, I figured I'd pick the item that closed the gap the most.  But this is arbitrary and not guaranteed to be helpful at all!  
+3. Research some properties of the arithmetic mean (like if you add a constant to each observation, then the mean increases by that constant).  Similarly, if you subtract a constant from each observation, multiply or divide, the mean is adjusted accordingly.  This also got me nowhere. 
 
-## Second idea - start with two empty lists and build up, trying to keep their means the same
+4. Try some algebra based on:  (A1 + A2 + ... + An) / n = (B1 + B2 + ... + Bm) / m
+While this is true, there are just far to many unknowns here for it to be useful.
 
-Ok, so how about we start with two empty lists.  We add an item to one list and then we check the mean of each.  Then we determine what number we need to add to the other list in order to keep the mean the same.  For example, suppose you have:
+## The first observation that proved useful
+
+We're given the example of [ 1,2,3,4,5,6,7,8] and told that it should return true because this list can be split into [ 1,4,5,8 ] and [ 2,3,6,7 ].  Each of those lists has a mean of 4.5.
+
+Observe that the mean for [ 1,2,3,4,5,6,7,8 ] is also 4.5!  Does that mean I can take any list of numbers, and if it's possible to break it into two smaller lists such that their means are equal, the mean of each list will be equal to the mean of the original list?
+
+Turn out it does!  I'm not going to mathematically prove this to you (mostly becuase I am not good a mathematical proofs) but here are a few examples of this phenomenon in action:
+
+**Example A:**
+
+[ 3, 5, 2, 2, 1, 4, 4, 5 ] has a mean of 3.25 (26/8)
+
+I can break this list down into [ 1,4,4,5 ] and [ 2,2,4,5 ] both of which have a mean of 3.25.
+
+**Example B:**
+
+[ 6, 2, 2, 5, 4, 1, 1 ] has a mean of of 3 (21/7)
+
+I can beak this list down into [ 2,4 ] and [ 1, 1, 2, 5, 6 ] both of which have a mean of 3.
+
+There's actually another option here two: [ 1,2,6 ] and [ 1,2,4,5 ], both of which have a mean of 3.
+
+## So how does knowing the Target Mean help?
+
+Knowing the target mean of the two lists: A and B, is very useful.  If I know what the mean of each list must be, then really, the problem boils down to: is there a set of numbers such that the mean of that set will equal the target mean (if so, the leftover set of numbers must **also** equal the target mean).  And if there is no such set of numbers, then it is not possible to split the list into two smaller lists with equal means, so we return false.
+
+The above probably needs some additional explanation.  If we can find a set of numbers whose mean equals the target mean (ignore for the moment **how** to do this), how do we know that the remaining set of numbers has the same mean?
+
+Math. Suppose we have 7 numbers: [ 6, 2, 2, 5, 4, 1, 1 ].  We've already established that the target mean is 3 (that is the sum of all numbers divided by 7).  In order to achieve a mean of 3 with only integers (which is all I have available), I need multiples of 3 that divide evenly by some integer.  For example: 6/2, or 9/3, or 12/4, or 15/5, etc.  How else can you achieve a mean of 3?
+
+How far can we push this?  If we know the target mean (3), and if we know the total number of numbers (7), and we know the *smallest* possible list we can create (a list with just 1 item), then we effecitively know all the possibilities!
+
+## This is a kSum problem in disguise
+
+This problem boils down to what is effectively a kSum problem.  Have you ever solved two sum or three sum?  Well, if you can solve those, you should be able to extend the solution to solve kSum.
+
+The kSum problem would be: given an integer value k, a target sum, and a list of integers, determine if it's possible to form the sum with exactly k numbers.
+
+For example:
+```
+input = [ 1, 2, 4, 3, 5, 6, 2 ]
+k = 4
+sum = 11
+```
+Are there 4 numbers whose sum equals 11? Yes: 6, 2, 2, 1
+
+How does this help?  Let's return to the problem at hand with the input: [ 6, 2, 2, 5, 4, 1, 1 ].  We know the target mean must be 3.  We know we must split the list into two smaller lists.  How many items will be in each list?  Here are all the possibilities:
 
 ```
-[ 1, 2, 3, 4, 5, 6, 7, 8 ]
+List A: 1 item, List B: 6 items
+List A: 2 items, List B: 5 items
+List A: 3 items, List B: 4 items
 ```
 
-Now suppose you put 1 in list A.  What would you have to put in list B to achieve a mean of 1?  Well, you need a 1, and you don't have one available. So I guess, you put the next best thing: a 2.  Now your means differ.  List A has a mean of 1, while List B has a mean of 2.  Is there someone I could add to either list to make them the same?  Sure, I could add a 3 to list A.  Then I'd have (1+3)/2 which is 2, and then of course, List B already has a mean of 2.
+## Ok, but how is this a kSum problem?
 
-But if you try to keep going in this manner, you'll find that you end up in a situation where you still at least one number left to place in either List A or B, but doing so will not yield you equal means.  But that doesn't mean it can't be done!  It just means you have the wrong items in the wrong lists (in this case).
+Let's take another example: [ 3, 5, 2, 2, 1, 4, 4, 5 ].
 
-Perhaps, instead of limiting yourself to placing just one number in a list, you could consider swapping numbers, and or swapping two for one or some such.  But this quickly gets out of control.
+The target mean for the above input is 3.25. There are 8 numbers in that list.  We must split the list into two lists with fewer numbers than 8 and more than 0.  That could be:
 
-## Third idea -- more maths
+- 1 number and 7 numbers
+- 2 numbers and 6 numbers
+- 3 numbers and 5 nuumbers
+- 4 numbers and 4 numbers
 
-The given example of [ 1, 2, 3, 4, 5, 6, 7, 8 ] says that it should return true, b/c the list can be split into two lists, each of which have a mean of 4.5.  Where did 4.5 come from?  Of course it is the sum of items in list A divided by the number of items in List A.  In this example, List A and List B happen to have the same number of items, but this doens't have to be the case (and often isn't).
+**However**, several of those combinations can be completely eliminated!  A list with 1 number is out.  How are you going to have a list with just one integer in it and have the mean be 3.25?  You can't.
 
-Is there some way I can know the target mean for List A and List B from the get-go?  There is!  It turns out, that the target mean for List A and List B (if the problem is solvable) is going to be the same as the mean for the original list.
+If your list has 2 numbers, then those 2 numbers must sum to 6.5 in order to have a mean of 3.25.  But that's also impossible.  What two *integers* can you add together to get 6.5?
 
-The mean of [ 1, 2, 3, 4, 5, 6, 7, 8 ] is 4.5, and so are the means for Lists A and B that it got broken into to solve the sample problem.
+If your list has 3 numbers?  Still impossible.  The 3 numbers would need to total 9.75.
 
-This holds true for any list of numbers!  **If** you **can** split the list into two smaller lists whose means are equal, then the mean of each list will be the same as the mean of the original list.
+How about a list with 4 numbers?  Ah! Now we have a *possibility*. Four numbers would need to sum to 3.25*4 = 13.  It's totally possible to have 4 numbers that sum to 13.
 
+Now, whether or not the necessary numbers exist in the original list is a different question.  In fact, it's the question we need to answer!  And you'll note that it's effecticely a kSum problem!
+
+Are there k=4 numbers that sum to 13 in the list [ 3, 5, 2, 2, 1, 4, 4, 5 ]?
+Turns out there are, so for this input, we would return true.  If there weren't, we would return false, but that's only because we already confirmed that the combinations of 1:7, 2:6, 3:5 were not feasible.  We cannot simply stop early and return false if we find one of the combinations to be non-feasible, or (even if it is feasible) if we determine that no such kSum exists.  We must try all the combinations in order to confidently return false.
+
+We can of course, return true early if we find anything that works.
+
+## What does the code look like?
+
+Let's start with the code that makes use of kSum, but I'll omit the implementation of kSum for now and come back to that later.
+
+```javascript
+var splitArraySameAverage = function(A)
+{
+	// if we don't have at least 2 element, we cannot possibly split
+	// the list into two *non-empty* lists, return false
+    if (A.length < 2) return false;
+
+	// determine the sum of all numbers
+    let sum = A.reduce((a,b) => a+b);
+    
+	// if the sum is 0, and we have at least two numbers, return true
+    if (sum == 0) return true;
+    
+	// determine the target mean
+    const targetMean = sum / A.length;
+    
+	// determine what k:sum possibilities exist
+	// for example, 1 number that sums to 3, or 2 numbers that sum to 6, etc...
+    const possibilities = [];
+    for (let i = 1; i < A.length; i++)
+    {
+		// the sum is simply the targetMean multiplied by some integer
+        let s = targetMean * i;
+
+		// it must be a whole number integer though, and because of Javascript's
+		// floating point numbers, we can't simply multiple and check Number.isInteger
+		// (we would end up with a number like 29.00000005
+        s = Math.round(s * 10000)/10000;
+
+        if (Number.isInteger(s))
+        {
+            possibilities.push({ sum: s, qty: i });
+        }
+    }
+    
+    A.sort((a,b) => a-b);
+    for (p of possibilities)
+    {
+        if (kSum(A, p.sum, 0, p.qty)) return true;
+    }
+    
+    return false;    
+};
+```
