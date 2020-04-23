@@ -27,7 +27,7 @@ I didn't write a single line of code for this problem for a few days.  I spent t
 
 I tried a variety of ideas, including:
 
-1. Start with two empty lists. Add one item to one list and see if the means are the same. If not, try to figure out the "best" number to add to the other list to keep the means the same (or as close as possible). This got me nowhere
+1. Start with two empty lists. Add one item to one list and see if the means are the same. If not, try to figure out the "best" number to add to the other list to keep the means the same (or as close as possible). This got me nowhere.
 
 2. Start by splitting the original array in half and compare the means.  Try to determine which number should be moved from one list to the other in order to "close the gap" in means between the two lists.  This also got me nowhere.
 
@@ -38,25 +38,25 @@ While this is true, there are just far to many unknowns here for it to be useful
 
 ## The first observation that proved useful
 
-We're given the example of [ 1,2,3,4,5,6,7,8] and told that it should return true because this list can be split into [ 1,4,5,8 ] and [ 2,3,6,7 ].  Each of those lists has a mean of 4.5.
+We're given the example of [ 1, 2, 3, 4, 5, 6, 7, 8 ] and told that it should return true because this list can be split into [ 1, 4, 5, 8 ] and [ 2, 3, 6, 7 ].  Each of those lists has a mean of 4.5.
 
-Observe that the mean for [ 1,2,3,4,5,6,7,8 ] is also 4.5!  Does that mean I can take any list of numbers, and if it's possible to break it into two smaller lists such that their means are equal, the mean of each list will be equal to the mean of the original list?
+Observe that the mean for [ 1, 2, 3, 4, 5, 6, 7, 8 ] is also 4.5!  Does that mean I can take any list of numbers, and if it's possible to break it into two smaller lists such that their means are equal, the mean of each list will be equal to the mean of the original list?
 
 Turn out it does!  I'm not going to mathematically prove this to you (mostly becuase I am not good a mathematical proofs) but here are a few examples of this phenomenon in action:
 
 **Example A:**
 
-[ 3, 5, 2, 2, 1, 4, 4, 5 ] has a mean of 3.25 (26/8)
+[ 3, 5, 2, 2, 1, 4, 4, 5 ] has a mean of 3.25 (26 / 8)
 
 I can break this list down into [ 1,4,4,5 ] and [ 2,2,4,5 ] both of which have a mean of 3.25.
 
 **Example B:**
 
-[ 6, 2, 2, 5, 4, 1, 1 ] has a mean of of 3 (21/7)
+[ 6, 2, 2, 5, 4, 1, 1 ] has a mean of of 3 (21 / 7)
 
-I can beak this list down into [ 2,4 ] and [ 1, 1, 2, 5, 6 ] both of which have a mean of 3.
+I can beak this list down into [ 2, 4 ] and [ 1, 1, 2, 5, 6 ] both of which have a mean of 3.
 
-There's actually another option here two: [ 1,2,6 ] and [ 1,2,4,5 ], both of which have a mean of 3.
+There's actually another option here two: [ 1, 2, 6 ] and [ 1, 2, 4, 5 ], both of which have a mean of 3.
 
 ## So how does knowing the Target Mean help?
 
@@ -70,7 +70,7 @@ How far can we push this?  If we know the target mean (3), and if we know the to
 
 ## This is a kSum problem in disguise
 
-This problem boils down to what is effectively a kSum problem.  Have you ever solved two sum or three sum?  Well, if you can solve those, you should be able to extend the solution to solve kSum.
+This problem boils down to what is effectively a kSum problem.  Have you ever solved [Two Sum](https://leetcode.com/problems/two-sum/) or [Three Sum](https://leetcode.com/problems/3sum/)?  Well, if you can solve those, you should be able to extend the solution to solve kSum.
 
 The kSum problem would be: given an integer value k, a target sum, and a list of integers, determine if it's possible to form the sum with exactly k numbers.
 
@@ -118,49 +118,192 @@ We can of course, return true early if we find anything that works.
 
 ## What does the code look like?
 
-Let's start with the code that makes use of kSum, but I'll omit the implementation of kSum for now and come back to that later.
+Let's start with the code that makes use of kSum, but I'll omit the implementation of kSum for now and come back to that later. (The code isn't that long - it just looks long because I've added a lot of comments for clarity).
 
 ```javascript
 var splitArraySameAverage = function(A)
 {
 	// if we don't have at least 2 element, we cannot possibly split
 	// the list into two *non-empty* lists, return false
-    if (A.length < 2) return false;
+	if (A.length < 2) return false;
 
 	// determine the sum of all numbers
-    let sum = A.reduce((a,b) => a+b);
-    
+	let sum = A.reduce((a,b) => a+b);
+
 	// if the sum is 0, and we have at least two numbers, return true
-    if (sum == 0) return true;
-    
+	if (sum == 0) return true;
+
 	// determine the target mean
-    const targetMean = sum / A.length;
-    
+	const targetMean = sum / A.length;
+
 	// determine what k:sum possibilities exist
 	// for example, 1 number that sums to 3, or 2 numbers that sum to 6, etc...
-    const possibilities = [];
-    for (let i = 1; i < A.length; i++)
-    {
+	const possibilities = [];
+	for (let i = 1; i < A.length; i++)
+	{
 		// the sum is simply the targetMean multiplied by some integer
-        let s = targetMean * i;
+		let s = targetMean * i;
 
+		// --See *Note below code--
 		// it must be a whole number integer though, and because of Javascript's
 		// floating point numbers, we can't simply multiple and check Number.isInteger
-		// (we would end up with a number like 29.00000005
-        s = Math.round(s * 10000)/10000;
+		// (we would end up with a number like 29.000000000000004)
+		s = Math.round(s * 10000)/10000;
 
-        if (Number.isInteger(s))
-        {
-            possibilities.push({ sum: s, qty: i });
-        }
-    }
-    
-    A.sort((a,b) => a-b);
-    for (p of possibilities)
-    {
-        if (kSum(A, p.sum, 0, p.qty)) return true;
-    }
-    
-    return false;    
+		// if targetMean x some integer is a whole number,
+		// we've found a possibility that we need to test (the sum
+		// is s, and the k (or quantity) is i
+		if (Number.isInteger(s))
+		{
+			possibilities.push({ sum: s, qty: i });
+		}
+	}
+
+	// There are a few solutions to kSum, but one technique involves working
+	// on a sorted list, so we do that first, before iterating through
+	// the possibilities
+	A.sort((a,b) => a-b);
+	for (p of possibilities)
+	{
+		// for each possibility, we check if there exists k (or qty) numbers
+		// which sume to exactly p.sum (possibility.sum)
+		if (kSum(A, p.sum, 0, p.qty)) return true;
+	}
+
+	// no kSum succeeded, so return false
+	return false;    
 };
 ```
+
+> ### *Note:
+> This is a floating point math issue.  All Javascript numbers are IEEE 754. Without getting into the details, it means that you can multiple a fraction like 29/7 which is exactly (4 1/7) by a multiple of 7 and NOT get a prefect whole number o_O.  In your favorite Javascript console, try
+>
+> (29 / 7) * 7
+>
+>The output will be 29.000000000000004.  Of course, mathematically, the answer *should* be exactly 29.0.  In our code, we need to treat 29.000000000000004 *as if it were* exactly 29.  How?  We can't just round or truncate, because we'll end up including or excluding some values that we shouldn't.  One way is to first multiply by a large factor of 10, round that, and then divide by the same factor.
+
+## Ok, what about kSum?
+
+Well, this article isn't really about kSum, so my explanation will be brief.  But I will provide the code for it, and the full code at the bottom.
+
+Before solving kSum, let's think about TwoSum and how a sorted list of numbers helps solve that problem:
+
+[ 1, 2, 2, 4, 6, 7, 9, 9, 10 ]
+
+Suppose we're looking for a sum of 13.  We begin by using two pointers, one on the left, starting at 0 and the other on the right, starting at length-1.  The first two values we'd encounter would be *1* and *10* whose sum is *11*.  That's smaller than we're looking for, so which pointer should we move?
+
+Obviously, we need our sum to increase, but we want to do so by the smallest possible amount.  That means increasing the left pointer, so that we're now adding *2* and *10*.  Now we have 12.  Closer, but still not what we want. If we increase our left pointer again, we'll find another *2*.  Not helpful, so let's keep doing. 
+
+We're now at *4* and *10* which sums to *11*.  Too big this time, so now we need to *decrease* our right pointer.
+
+Finally, we're at *4* and *9* which sums to 13, so we've found an answer.
+
+Now, this only explains how to solve the problem for TwoSum.  We need to extend it for kSum.  Rather the explain this (this post is long enough alrady), I'm just going to past the code for kSum, with a few comments.  Hopefully it will make sense to you.
+
+```javascript
+function kSum(nums, sum, i, k)
+{
+	// if k is 1, then we just need to determine if the sum exists at all
+	if (k == 1) return nums.indexOf(sum) >= 0;
+
+	// if k is 2, we have a TwoSum problem, solve that using
+	// the two pointer concept
+	if (k == 2)
+	{
+		let j = nums.length-1;
+		while (i < j)
+		{
+			const s = nums[i] + nums[j];
+			if (s == sum) return true;
+			else if (s < sum) i++;
+			else if (s > sum) j--;
+		}
+		return false;
+	}
+
+	// if k > 2, we can solve this resursively
+	let last = -1;
+	for (let x = i; x < nums.length; x++)
+	{
+		// no need to recursively call kSum if nums[x] is a repeat
+		// of the last number we encountered -- just continue in that case
+		if (nums[x] == last) continue;
+		last = nums[x];
+
+		// Call kSum, reducing the target sum by nums[x], reducing k by 1,
+		// and increasing the pointer at which kSum will start searching (x+1).
+		// If kSum returns true, bail out early for perf 
+		if (kSum(nums, sum - nums[x], x+1, k-1)) return true;
+	}
+
+	// no collection of k elements found that sum to the given sum
+	return false;
+}
+```
+
+So hopefully this makes sense.  We simply leverage the concept I explained for TwoSum, but we expand it through recursion to work for kSum.
+
+We can now put all the code together.  You'll find the raw Javascript (sans comments) below.
+
+```javascript
+var splitArraySameAverage = function(A)
+{
+	if (A.length < 2) return false;
+
+	let sum = A.reduce((a,b) => a+b);
+	if (sum == 0) return true;
+
+	const targetMean = sum / A.length;
+
+	const possibilities = [];
+	for (let i = 1; i < A.length; i++)
+	{
+		let s = targetMean * i;
+		s = Math.round(s * 10000)/10000;
+
+		if (Number.isInteger(s))
+		{
+			possibilities.push({ sum: s, qty: i });
+		}
+	}
+
+	A.sort((a,b) => a-b);
+	for (p of possibilities)
+	{
+		if (kSum(A, p.sum, 0, p.qty)) return true;
+	}
+
+	return false;    
+};
+
+function kSum(nums, sum, i, k)
+{
+	if (k == 1) return nums.indexOf(sum) >= 0;
+	
+	if (k == 2)
+	{
+		let j = nums.length-1;
+		while (i < j)
+		{
+			const s = nums[i] + nums[j];
+			if (s == sum) return true;
+			else if (s < sum) i++;
+			else if (s > sum) j--;
+		}
+		return false;
+	}
+
+	let last = -1;
+	for (let x = i; x < nums.length; x++)
+	{
+		if (nums[x] == last) continue;
+		last = nums[x];
+
+		if (kSum(nums, sum - nums[x], x+1, k-1)) return true;
+	}
+
+	return false;
+}
+```
+
+Full solution available in [solution1.js](solution1.js)
