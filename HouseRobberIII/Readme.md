@@ -96,3 +96,31 @@ The best option then, is 13 + 4 + 16 = 23, since it is greater than 13 + 9 = 22.
 Hopefully what I've described above makes sense.  To help illustrate it better, here is an image of what I actually white-boarded when solving this problem.  It includes the tree, and next to each node in the tree are the two "best" values that can be obtained from each subtree.  The first number represents the best value that can be obtained if the root of the subtree is **included** in the total and the second number represents the best value that can be obtains if the root of the subtree is **excluded** from the total.
 
 ![Tree example](./tree.jpg)
+
+So how do we get these values?  Resursively of course!  It's not too had either.  Your base case is simple: if you encounter a null node, you simply *return [0, 0]*.  Otherwise, resursively get the *left* values, recursively get the *right* values.  Using those values, calculate both options and return them both as an array (where the first option is the one that **include** the root and teh second option is the one that does not).
+
+Here's the full code:
+
+```javascript
+var rob = function(root)
+{
+    const options = traverse(root);
+    return Math.max.apply(null, options);
+};
+
+function traverse(n)
+{
+    console.log('traversing');
+    if (!n) return [0, 0];
+
+    const left = traverse(n.left);
+    const right = traverse(n.right);
+
+    const option1 = left[1] + n.val + right[1];
+    const option2 = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
+
+    return [option1, option2]; 
+}
+```
+
+That's the full solution, so there is hardly any need to post it in a stand-alone file, but just for consistently, here it is: [solution1.js](solution1.js)
