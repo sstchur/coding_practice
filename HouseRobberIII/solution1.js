@@ -6,7 +6,6 @@ var rob = function(root)
 
 function traverse(n)
 {
-    console.log('traversing');
     if (!n) return [0, 0];
 
     const left = traverse(n.left);
